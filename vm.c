@@ -45,7 +45,7 @@ load(FILE *f)
 {
 	short i;
 	for (i = 0; i < MEM_SIZE; i++) {
-		if (!fread(mm + i, sizeof char, 1, f))
+		if (!fread(mm + i, sizeof(char), 1, f))
 			break;
 	}
 	for (i = i < 2 ? 2 : i; i < MEM_SIZE; i++)
