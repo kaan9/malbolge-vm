@@ -1,4 +1,6 @@
+#include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 /* 
  * Malbolge executes on a ternary virtual machine with a machine-width of 10
@@ -18,9 +20,11 @@
 #define NOP 68
 #define END 81
 
-/* short >= 2 ^ 16 == 65536 > 59049 = 3 ^ 10 == malbolge register */
-short a = 0, c = 0, d = 0;	/*	registers	*/
-short mm[MEM_SIZE];		/*	main memory	*/
+typedef unsigned short ushort;
+
+/* uushort >= 2 ^ 16 == 65536 > 59049 = 3 ^ 10 == malbolge register */
+ushort a = 0, c = 0, d = 0;	/*	registers	*/
+ushort mm[MEM_SIZE];		/*	main memory	*/
 
 char crz_trit[3][3] = {
 	{ 1, 0, 0 },
@@ -28,10 +32,10 @@ char crz_trit[3][3] = {
 	{ 2, 2, 1 }
 };
 
-short
-crz(short a, short b)
+ushort
+crz(ushort a, ushort b)
 {
-	short c = 0, i;
+	ushort c = 0, i;
 	for (i = 1; i < MEM_SIZE; i *= 3) {
 		c += crz_trit[a % 3][b % 3] * i;
 		a /= 3;
@@ -41,15 +45,83 @@ crz(short a, short b)
 }
 
 void
+rotr(void)
+{
+	ushort t = mm[d] % 3;
+	mm[d] /= 3;
+	mm[d] += t * (MEM_SIZE / 3);
+}
+
+void
 load(FILE *f)
 {
-	short i;
-	for (i = 0; i < MEM_SIZE; i++) {
-		if (!fread(mm + i, sizeof(char), 1, f))
+	ushort i;
+	char c;
+	for (i = 0; i < MEM_SIZE;) {
+		if (fread(&c, sizeof(char), 1, f) <= 0)
 			break;
+		if (isspace(c))
+			continue;
+		switch((c + i) % 94) {
+		case JMP:
+		case OUT:
+		case IN:
+		case ROT:
+		case MOV:
+		case CRZ:
+		case NOP:
+		case END:
+			mm[i] = c;
+			i++;
+			continue;
+		default:
+			printf("invalid input program: %d - %d - %c\n", i, c, c);
+			exit(0);
+		}
 	}
-	for (i = i < 2 ? 2 : i; i < MEM_SIZE; i++)
+	if (i == 0)
+		mm[0] = 1;
+	if (i == 1)
+		mm[1] = crz(0, mm[1]);
+	for (i = (i < 2) ? 2 : i; i < MEM_SIZE; i++)
 		mm[i] = crz(mm[i - 2], mm[i - 1]);
+}
+
+void
+exec_inst(void)
+{
+	int ch;
+	for (;;) {
+		if (!isgraph(mm[c]))
+			exit(0);
+
+		switch((c + mm[c]) % 94) {
+		case JMP:
+			c = mm[d];
+			break;
+		case OUT:
+			putchar(a);
+			break;
+		case IN:
+			ch = getchar();
+			a = (ch == EOF) ? MEM_SIZE - 1 : ch;
+			break;
+		case ROT:
+			rotr();
+			a = mm[d];
+			break;
+		case MOV:
+			d = mm[d];
+			break;
+		case CRZ:
+			a = mm[d] = crz(mm[d], a);
+			break;
+		case END:
+			exit(0);
+		}
+		c = (c + 1) % MEM_SIZE;
+		d = (d + 1) % MEM_SIZE;
+	}
 }
 
 int
@@ -57,15 +129,16 @@ main(int argc, char **argv)
 {
 	FILE *f;
 	if (argc != 2) {
-		perror("usage:  malbolge-vm FILE\n");
+		fprintf(stderr, "usage:  malbolge-vm FILE\n");
 		return 1;
 	}
 	f = fopen(argv[1], "r");
 	if (!f) {
-		printf("%s: No such file or directory\n", argv[1]);
+		fprintf(stderr, "%s: No such file or directory\n", argv[1]);
 		return 2;
 	}
 	load(f);
-
+	exec_inst();
 	return 0;
 }
+
