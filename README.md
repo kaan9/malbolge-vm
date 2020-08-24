@@ -2,6 +2,8 @@
 
 Interpreter for the Malbolge Virtual Machine with a machine width of 10.
 
+Written in ANSI C.
+
 Unlike the reference implementation, this implementation does not rely on dynamic memory allocation.
 
 ## Compilation

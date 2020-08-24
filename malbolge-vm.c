@@ -44,7 +44,7 @@ crz(ushort a, ushort b)
 	return c;
 }
 
-void
+int
 load(FILE *f)
 {
 	ushort i;
@@ -67,7 +67,7 @@ load(FILE *f)
 			continue;
 		default:
 			printf("invalid input program: %d - %d - %c\n", i, c, c);
-			exit(0);
+			return 1;
 		}
 	}
 	if (i == 0)
@@ -76,6 +76,7 @@ load(FILE *f)
 		mm[1] = crz(0, mm[1]);
 	for (i = (i < 2) ? 2 : i; i < MEM_SIZE; i++)
 		mm[i] = crz(mm[i - 2], mm[i - 1]);
+	return 0;
 }
 
 void
@@ -84,17 +85,16 @@ exec_inst(void)
 	int ch;
 	for (;;) {
 		if (!isgraph(mm[c]))
-			exit(0);
-
+			return;
 		switch((c + mm[c]) % 94) {
 		case JMP:
 			c = mm[d];
 			break;
 		case OUT:
-			putchar(a);
+			putc(a, stdout);
 			break;
 		case IN:
-			ch = getchar();
+			ch = getc(stdin);
 			a = (ch == EOF) ? MEM_SIZE - 1 : ch;
 			break;
 		case ROT:
@@ -110,7 +110,7 @@ exec_inst(void)
 			exit(0);
 		}
 
-		mm[c] = "5z]&gqtyfr$(we4{WP)H-Zn,[%\3dL+Q;>U!pJS72FhOA1CB6v^=I"
+		mm[c] = "5z]&gqtyfr$(we4{WP)H-Zn,[%\\3dL+Q;>U!pJS72FhOA1CB6v^=I"
 			"_0/8|jsb9m<.TVac`uY*MK'X~xDl}REokN:#?G\"i@"[mm[c]-33];
 
 		c = (c + 1) % MEM_SIZE;
@@ -130,7 +130,8 @@ main(int argc, char **argv)
 		fprintf(stderr, "%s: No such file or directory\n", argv[1]);
 		return 2;
 	}
-	load(f);
+	if (load(f))
+		return 3;
 	fclose(f);
 	exec_inst();
 	return 0;
