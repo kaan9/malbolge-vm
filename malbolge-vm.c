@@ -119,6 +119,10 @@ exec_inst(void)
 		case END:
 			exit(0);
 		}
+
+		mm[c] = "5z]&gqtyfr$(we4{WP)H-Zn,[%\3dL+Q;>U!pJS72FhOA1CB6v^=I"
+			"_0/8|jsb9m<.TVac`uY*MK'X~xDl}REokN:#?G\"i@"[mm[c]-33];
+
 		c = (c + 1) % MEM_SIZE;
 		d = (d + 1) % MEM_SIZE;
 	}
