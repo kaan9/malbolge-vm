@@ -22,7 +22,7 @@
 
 typedef unsigned short ushort;
 
-/* uushort >= 2 ^ 16 == 65536 > 59049 = 3 ^ 10 == malbolge register */
+/* ushort >= 2 ^ 16 == 65536 > 59049 = 3 ^ 10 == malbolge register */
 ushort a = 0, c = 0, d = 0;	/*	registers	*/
 ushort mm[MEM_SIZE];		/*	main memory	*/
 
@@ -133,11 +133,10 @@ main(int argc, char **argv)
 {
 	FILE *f;
 	if (argc != 2) {
-		fprintf(stderr, "usage:  malbolge-vm FILE\n");
+		fprintf(stderr, "usage:  %s [FILE]\n", argv[0]);
 		return 1;
 	}
-	f = fopen(argv[1], "r");
-	if (!f) {
+	if (!(f = fopen(argv[1], "r"))) {
 		fprintf(stderr, "%s: No such file or directory\n", argv[1]);
 		return 2;
 	}
