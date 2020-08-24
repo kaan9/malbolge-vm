@@ -45,14 +45,6 @@ crz(ushort a, ushort b)
 }
 
 void
-rotr(void)
-{
-	ushort t = mm[d] % 3;
-	mm[d] /= 3;
-	mm[d] += t * (MEM_SIZE / 3);
-}
-
-void
 load(FILE *f)
 {
 	ushort i;
@@ -71,8 +63,7 @@ load(FILE *f)
 		case CRZ:
 		case NOP:
 		case END:
-			mm[i] = c;
-			i++;
+			mm[i++] = c;
 			continue;
 		default:
 			printf("invalid input program: %d - %d - %c\n", i, c, c);
@@ -107,8 +98,7 @@ exec_inst(void)
 			a = (ch == EOF) ? MEM_SIZE - 1 : ch;
 			break;
 		case ROT:
-			rotr();
-			a = mm[d];
+			a = mm[d] = mm[d] / 3 + (mm[d] % 3) * (MEM_SIZE / 3);
 			break;
 		case MOV:
 			d = mm[d];
@@ -141,6 +131,7 @@ main(int argc, char **argv)
 		return 2;
 	}
 	load(f);
+	fclose(f);
 	exec_inst();
 	return 0;
 }
