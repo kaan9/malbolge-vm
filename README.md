@@ -8,6 +8,8 @@ Unlike the reference implementation, this implementation does not rely on dynami
 
 The reference implementation can be found at [Malbolge reference impl](http://www.lscheffer.com/malbolge_interp.html).
 
+The official specification can be found at [Malbolge spec](http://www.lscheffer.com/malbolge_spec.html).
+
 ## Compilation
 `make malbolge-vm` or `cc malbolge-vm.c -o malbolge-vm`
 
