@@ -107,7 +107,7 @@ exec_inst(void)
 			a = mm[d] = crz(mm[d], a);
 			break;
 		case END:
-			exit(0);
+			return;
 		}
 
 		mm[c] = "5z]&gqtyfr$(we4{WP)H-Zn,[%\\3dL+Q;>U!pJS72FhOA1CB6v^=I"
