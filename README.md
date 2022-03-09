@@ -17,9 +17,11 @@ The official specification can be found at [Malbolge spec](https://web.archive.o
 `malbolge-vm [file].mb`
 
 ## Examples
-Hello World:	`malbolge-vm HelloWorld.mb`
+Hello World:	`malbolge-vm examples/HelloWorld.mb`
 
-cat:		`malbolge-vm cat.mb`
+cat:		`malbolge-vm examples/cat.mb`
+
+99 Bottles of Beer:   `malbolge-vm examples/bottles-995.mb`
 
 ## License
 MIT or dedicated to the public domain if applicable.
