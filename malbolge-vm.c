@@ -54,7 +54,7 @@ load(FILE *f)
 			break;
 		if (isspace(c))
 			continue;
-		switch((c + i) % 94) {
+		switch((c + i) % MAGIC) {
 		case JMP:
 		case OUT:
 		case IN:
@@ -86,7 +86,7 @@ exec_inst(void)
 	for (;;) {
 		if (!isgraph(mm[c]))
 			return;
-		switch((c + mm[c]) % 94) {
+		switch((c + mm[c]) % MAGIC) {
 		case JMP:
 			c = mm[d];
 			break;
